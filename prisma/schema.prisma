@@ -85,6 +85,9 @@ model Job {
   product           Product?           @relation(fields: [productId], references: [id], name: "product")
   statusId          String?
   status            JobStatus?         @relation(fields: [statusId], references: [id], name: "status")
+  jobId             String?            @unique()
+  salesRepId        String?
+  date              DateTime?
   communicationLogs CommunicationLog[] @relation("job")
   installations     Installation[]     @relation("job")
   jobNotes          JobNote[]          @relation("job")
@@ -97,13 +100,12 @@ model Job {
 /// @@allow('all', true)
 model CommunicationLog {
   id        String   @id() @default(uuid())
-  message   String?
-  jobId     String?
-  job       Job?     @relation(fields: [jobId], references: [id], name: "job")
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id], name: "user")
+  message   String
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt()
+  job       Job      @relation(fields: [jobId], references: [id], name: "job")
+  jobId     String
+  user      User?    @relation(fields: [userId], references: [id], name: "user")
+  userId    String?
 }
 
 /// @@allow('all', true)
@@ -145,10 +147,18 @@ model JobSchedule {
 
 /// @@allow('all', true)
 model JobSheet {
-  id        String   @id() @default(uuid())
-  sheetUrl  String?
-  jobId     String?
-  job       Job?     @relation(fields: [jobId], references: [id], name: "job")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt()
+  id                String    @id() @default(uuid())
+  sheetUrl          String?
+  category          String?
+  customerName      String?
+  jobId             String?
+  salesRep          String?
+  date              DateTime?
+  blindType         String?
+  blindMeasurements String?
+  blindColor        String?
+  blindMaterial     String?
+  job               Job?      @relation(fields: [jobId], references: [id], name: "job")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now()) @updatedAt()
 }

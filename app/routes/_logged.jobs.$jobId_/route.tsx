@@ -30,7 +30,7 @@ export default function JobDetailsPage() {
 
   const [jobNotes, setJobNotes] = useState<Prisma.JobNoteGetPayload<{}>[]>([])
   const [isEditModalVisible, setIsEditModalVisible] = useState(false)
-  const [selectedJobSheet, setSelectedJobSheet] = useState<any>(null)
+  const [selectedJobSheet, setSelectedJobSheet] = useState<Prisma.JobSheetGetPayload<{}> | null>(null)
 
   const {
     data: job,
@@ -46,7 +46,7 @@ export default function JobDetailsPage() {
       jobSchedules: true,
       jobNotes: { include: { user: true } },
     },
-  })
+  }) as { data: Prisma.JobGetPayload<{ include: { customer: true; product: true; status: true; jobSheets: true; jobSchedules: true; jobNotes: { include: { user: true } } } }> | undefined, isLoading: boolean, refetch: () => void }
 
   const { data: jobSheet, refetch: refetchJobSheet } = Api.jobSheet.findUnique.useQuery(
     { where: { id: selectedJobSheet?.id } },
@@ -102,13 +102,13 @@ export default function JobDetailsPage() {
     }
   }
 
-  const handleEditJobSheet = (sheet: any) => {
+  const handleEditJobSheet = (sheet: Prisma.JobSheetGetPayload<{}>) => {
     setSelectedJobSheet(sheet)
     editForm.setFieldsValue(sheet)
     setIsEditModalVisible(true)
   }
 
-  const handleUpdateJobSheet = async (values: any) => {
+  const handleUpdateJobSheet = async (values: Prisma.JobSheetUpdateInput) => {
     if (selectedJobSheet) {
       await updateJobSheet({
         where: { id: selectedJobSheet.id },
@@ -155,11 +155,11 @@ export default function JobDetailsPage() {
         <Card title="Job Information">
           <Space direction="vertical">
             <Text strong>Customer: </Text>
-            <Text>{job.customer?.name}</Text>
+            <Text>{job?.customer?.name}</Text>
             <Text strong>Product: </Text>
-            <Text>{job.product?.name}</Text>
+            <Text>{job?.product?.name}</Text>
             <Text strong>Current Status: </Text>
-            <Text>{job.status?.name}</Text>
+            <Text>{job?.status?.name}</Text>
           </Space>
         </Card>
 
@@ -168,7 +168,7 @@ export default function JobDetailsPage() {
             style={{ width: 200 }}
             placeholder="Select new status"
             onChange={handleStatusUpdate}
-            value={job.statusId || undefined}
+            value={job?.statusId || undefined}
           >
             {statuses?.map(status => (
               <Select.Option key={status.id} value={status.id}>
@@ -180,8 +180,8 @@ export default function JobDetailsPage() {
 
         <Card title="Job Sheets">
           <List
-            dataSource={job.jobSheets}
-            renderItem={sheet => (
+            dataSource={job?.jobSheets}
+            renderItem={(sheet: Prisma.JobSheetGetPayload<{}>) => (
               <List.Item
                 actions={[
                   <Button onClick={() => handleEditJobSheet(sheet)}>Edit</Button>,
@@ -193,8 +193,6 @@ export default function JobDetailsPage() {
                   <a href={sheet.sheetUrl || '#'} target="_blank" rel="noopener noreferrer">
                     <i className="las la-file-alt"></i> Job Sheet
                   </a>
-                  <Text strong>Details: </Text>
-                  <Text>{sheet.details}</Text>
                 </Space>
               </List.Item>
             )}
@@ -202,7 +200,7 @@ export default function JobDetailsPage() {
         </Card>
 
         <Card title="Job Schedule">
-          {job.jobSchedules?.map(schedule => (
+          {job?.jobSchedules?.map(schedule => (
             <Text key={schedule.id}>
               Scheduled for: {schedule.scheduledDate} at{' '}
               {schedule.scheduledTime}
@@ -235,8 +233,8 @@ export default function JobDetailsPage() {
 
         <Card title="Job Notes">
           <List
-            dataSource={job.jobNotes}
-            renderItem={note => (
+            dataSource={job?.jobNotes}
+            renderItem={(note: Prisma.JobNoteGetPayload<{ include: { user: true } }>) => (
               <List.Item>
                 <Space direction="vertical">
                   <Text>{note.note}</Text>

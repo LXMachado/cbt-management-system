@@ -19,7 +19,7 @@ model User {
     updatedAt         DateTime           @updatedAt @default(now())
 
     customers         Customer[]         @relation("user")
-    communicationLogs CommunicationLog[] @relation("user", references: [id])
+    communicationLogs CommunicationLog[] @relation("user")
     jobNotes          JobNote[]          @relation("user")
     jobSchedules      JobSchedule[]      @relation("user")
 
@@ -87,7 +87,7 @@ model Job {
     salesRepId        String?
     date              DateTime?
 
-    communicationLogs CommunicationLog[] @relation("job", references: [id])
+    communicationLogs CommunicationLog[] @relation("job")
     installations     Installation[]     @relation("job")
     jobNotes          JobNote[]          @relation("job")
     jobSchedules      JobSchedule[]      @relation("job")
@@ -103,8 +103,8 @@ model CommunicationLog {
     createdAt DateTime @default(now())
     job Job @relation(fields: [jobId], references: [id], name: "job")
     jobId String
-    user User @relation(fields: [userId], references: [id], name: "user")
-    userId String
+    user User? @relation(fields: [userId], references: [id], name: "user")
+    userId String?
 
     @@allow("all", true)
 }
