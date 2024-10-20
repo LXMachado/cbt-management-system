@@ -1,0 +1,178 @@
+enum UserStatus {
+    INVITED
+    VERIFIED
+}
+
+model User {
+    id                String             @id @default(uuid())
+    name              String?
+    email             String?            @unique
+    pictureUrl        String?            @default('https://i.imgur.com/ZdJSK3Y.jpeg')
+    tokenInvitation   String?
+
+    status            UserStatus         @default(VERIFIED)
+
+    // this is the role of the user for the application
+    globalRole        String             @default('USER')
+    password          String?            @password @omit
+    createdAt         DateTime           @default(now())
+    updatedAt         DateTime           @updatedAt @default(now())
+
+    customers         Customer[]         @relation("user")
+    communicationLogs CommunicationLog[] @relation("user", references: [id])
+    jobNotes          JobNote[]          @relation("user")
+    jobSchedules      JobSchedule[]      @relation("user")
+
+    @@auth()
+    @@allow("all", auth().id == this.id)
+    @@allow('all', auth().globalRole == 'ADMIN')
+
+    //we only allow that user to register if they don't create an admin role
+    @@allow("create", globalRole != 'ADMIN')
+    @@allow("read", true)
+}
+
+model Customer {
+
+    id        String   @id @default(uuid())
+    name      String?
+    email     String?
+    phone     String?
+    address   String?
+    userId    String?
+    user      User?    @relation(fields: [userId], references: [id], name: "user")
+
+    jobs      Job[]    @relation("customer")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model Product {
+
+    id          String   @id @default(uuid())
+    name        String?
+    description String?
+    price       Float?
+
+    jobs        Job[]    @relation("product")
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model JobStatus {
+
+    id           String   @id @default(uuid())
+    name         String?
+    description  String?
+
+    jobsAsStatus Job[]    @relation("status")
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model Job {
+
+    id                String             @id @default(uuid())
+
+    customerId        String?
+    customer          Customer?          @relation(fields: [customerId], references: [id], name: "customer")
+    productId         String?
+    product           Product?           @relation(fields: [productId], references: [id], name: "product")
+    statusId          String?
+    status            JobStatus?         @relation(fields: [statusId], references: [id], name: "status")
+    jobId             String?            @unique
+    salesRepId        String?
+    date              DateTime?
+
+    communicationLogs CommunicationLog[] @relation("job", references: [id])
+    installations     Installation[]     @relation("job")
+    jobNotes          JobNote[]          @relation("job")
+    jobSchedules      JobSchedule[]      @relation("job")
+    jobSheets         JobSheet[]         @relation("job")
+    createdAt         DateTime           @default(now())
+    updatedAt         DateTime           @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model CommunicationLog {
+    id String @id @default(uuid())
+    message String
+    createdAt DateTime @default(now())
+    job Job @relation(fields: [jobId], references: [id], name: "job")
+    jobId String
+    user User @relation(fields: [userId], references: [id], name: "user")
+    userId String
+
+    @@allow("all", true)
+}
+
+model Installation {
+
+    id               String   @id @default(uuid())
+    installationDate String?
+    completed        Boolean?
+    notes            String?
+    jobId            String?
+    job              Job?     @relation(fields: [jobId], references: [id], name: "job")
+
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model JobNote {
+
+    id        String   @id @default(uuid())
+    note      String?
+
+    jobId     String?
+    job       Job?     @relation(fields: [jobId], references: [id], name: "job")
+    userId    String?
+    user      User?    @relation(fields: [userId], references: [id], name: "user")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model JobSchedule {
+
+    id            String   @id @default(uuid())
+    scheduledDate String?
+    scheduledTime String?
+    jobId         String?
+    job           Job?     @relation(fields: [jobId], references: [id], name: "job")
+    userId        String?
+    user          User?    @relation(fields: [userId], references: [id], name: "user")
+
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model JobSheet {
+
+    id                String   @id @default(uuid())
+    sheetUrl          String?
+    category          String?
+    customerName      String?
+    jobId             String?
+    salesRep          String?
+    date              DateTime?
+    
+    // Blind job sheet template fields
+    blindType         String?
+    blindMeasurements String?
+    blindColor        String?
+    blindMaterial     String?
+    
+    job               Job?     @relation(fields: [jobId], references: [id], name: "job")
+
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt @default(now())
+    @@allow("all", true)
+}
+
