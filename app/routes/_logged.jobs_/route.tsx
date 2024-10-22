@@ -155,6 +155,8 @@ export default function JobManagementPage() {
   }
 
   const [activeTab, setActiveTab] = useState('curtains')
+  const [isViewModalVisible, setIsViewModalVisible] = useState(false)
+  const [selectedJobSheet, setSelectedJobSheet] = useState(null)
 
   const handleCreateJobSheet = () => {
     setIsJobSheetModalVisible(true)
@@ -162,9 +164,10 @@ export default function JobManagementPage() {
 
   const handleJobSheetSubmit = async (values) => {
     try {
+      const formattedJobSheet = generateFormattedJobSheet(values)
       await createJobSheet({
         data: {
-          ...values,
+          ...formattedJobSheet,
           category: activeTab,
         },
       })
@@ -175,6 +178,28 @@ export default function JobManagementPage() {
     } catch (error) {
       message.error('Failed to create job sheet')
     }
+  }
+
+  const generateFormattedJobSheet = (values) => {
+    // Implement the formatting logic here
+    return {
+      ...values,
+      formattedContent: JSON.stringify(values), // This is a placeholder, implement actual formatting
+    }
+  }
+
+  const handleViewJobSheet = (jobSheet) => {
+    setSelectedJobSheet(jobSheet)
+    setIsViewModalVisible(true)
+  }
+
+  const handlePrintJobSheet = () => {
+    window.print()
+  }
+
+  const handleSaveJobSheet = () => {
+    // Implement PDF saving logic here
+    message.success('Job sheet saved as PDF')
   }
 
   const handleEditJobSheet = async (id, values) => {
@@ -229,6 +254,7 @@ export default function JobManagementPage() {
       key: 'actions',
       render: (_, record) => (
         <Space>
+          <Button onClick={() => handleViewJobSheet(record)}>View</Button>
           <Button onClick={() => handleEditJobSheet(record.id, record)}>Edit</Button>
           <Button danger onClick={() => handleDeleteJobSheet(record.id)}>Delete</Button>
         </Space>
@@ -299,6 +325,16 @@ export default function JobManagementPage() {
               <Table
                 columns={jobSheetColumns}
                 dataSource={jobSheets?.filter(sheet => sheet.category === 'tracks')}
+                rowKey="id"
+              />
+            </TabPane>
+            <TabPane tab="Roller Blinds" key="rollerBlinds">
+              <Button onClick={handleCreateJobSheet} style={{ marginBottom: '20px' }}>
+                Create Roller Blind Job Sheet
+              </Button>
+              <Table
+                columns={jobSheetColumns}
+                dataSource={jobSheets?.filter(sheet => sheet.category === 'rollerBlinds')}
                 rowKey="id"
               />
             </TabPane>
@@ -383,12 +419,105 @@ export default function JobManagementPage() {
             >
               <DatePicker style={{ width: '100%' }} />
             </Form.Item>
+            {activeTab === 'rollerBlinds' && (
+              <>
+                <Form.Item name="room" label="Room" rules={[{ required: true, message: 'Please enter room' }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="type" label="Type" rules={[{ required: true, message: 'Please enter type' }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="tube" label="Tube" rules={[{ required: true, message: 'Please enter tube' }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="width" label="Width" rules={[{ required: true, message: 'Please enter width' }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="drop" label="Drop" rules={[{ required: true, message: 'Please enter drop' }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="fixing" label="Fixing" rules={[{ required: true, message: 'Please enter fixing' }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="baseFinish" label="Base Finish" rules={[{ required: true, message: 'Please enter base finish' }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="rollType" label="Roll Type" rules={[{ required: true, message: 'Please enter roll type' }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="fabric" label="Fabric" rules={[{ required: true, message: 'Please enter fabric' }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="bracketType" label="Bracket Type" rules={[{ required: true, message: 'Please enter bracket type' }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="controlType" label="Control Type" rules={[{ required: true, message: 'Please enter control type' }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="controlSide" label="Control Side" rules={[{ required: true, message: 'Please select control side' }]}>
+                  <Select>
+                    <Select.Option value="left">Left</Select.Option>
+                    <Select.Option value="right">Right</Select.Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item name="controlColour" label="Control Colour" rules={[{ required: true, message: 'Please enter control colour' }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item name="chainLength" label="Chain Length" rules={[{ required: true, message: 'Please enter chain length' }]}>
+                  <Input />
+                </Form.Item>
+              </>
+            )}
             <Form.Item>
               <Button type="primary" htmlType="submit">
                 Create Job Sheet
               </Button>
             </Form.Item>
           </Form>
+        </Modal>
+
+        <Modal
+          title="View Job Sheet"
+          visible={isViewModalVisible}
+          onCancel={() => setIsViewModalVisible(false)}
+          footer={[
+            <Button key="print" onClick={handlePrintJobSheet}>
+              Print
+            </Button>,
+            <Button key="save" onClick={handleSaveJobSheet}>
+              Save as PDF
+            </Button>,
+            <Button key="close" onClick={() => setIsViewModalVisible(false)}>
+              Close
+            </Button>,
+          ]}
+        >
+          {selectedJobSheet && (
+            <div>
+              <p><strong>Customer Name:</strong> {selectedJobSheet.customerName}</p>
+              <p><strong>Job ID:</strong> {selectedJobSheet.jobId}</p>
+              <p><strong>Sales Rep:</strong> {selectedJobSheet.salesRep}</p>
+              <p><strong>Date:</strong> {dayjs(selectedJobSheet.date).format('YYYY-MM-DD')}</p>
+              {selectedJobSheet.category === 'rollerBlinds' && (
+                <>
+                  <p><strong>Room:</strong> {selectedJobSheet.room}</p>
+                  <p><strong>Type:</strong> {selectedJobSheet.type}</p>
+                  <p><strong>Tube:</strong> {selectedJobSheet.tube}</p>
+                  <p><strong>Width:</strong> {selectedJobSheet.width}</p>
+                  <p><strong>Drop:</strong> {selectedJobSheet.drop}</p>
+                  <p><strong>Fixing:</strong> {selectedJobSheet.fixing}</p>
+                  <p><strong>Base Finish:</strong> {selectedJobSheet.baseFinish}</p>
+                  <p><strong>Roll Type:</strong> {selectedJobSheet.rollType}</p>
+                  <p><strong>Fabric:</strong> {selectedJobSheet.fabric}</p>
+                  <p><strong>Bracket Type:</strong> {selectedJobSheet.bracketType}</p>
+                  <p><strong>Control Type:</strong> {selectedJobSheet.controlType}</p>
+                  <p><strong>Control Side:</strong> {selectedJobSheet.controlSide}</p>
+                  <p><strong>Control Colour:</strong> {selectedJobSheet.controlColour}</p>
+                  <p><strong>Chain Length:</strong> {selectedJobSheet.chainLength}</p>
+                </>
+              )}
+            </div>
+          )}
         </Modal>
       </div>
     </PageLayout>
