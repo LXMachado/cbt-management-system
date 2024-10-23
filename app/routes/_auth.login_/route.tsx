@@ -66,7 +66,7 @@ export default function LoginPage() {
         }}
         gap="middle"
       >
-        <AppHeader title="AC B" description="Welcome!" />
+        <AppHeader title="AC&B" description="Welcome!" />
 
         {errorKey && (
           <Typography.Text type="danger">{errorMessage}</Typography.Text>

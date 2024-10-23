@@ -61,7 +61,7 @@ export default function RegisterPage() {
         }}
         gap="middle"
       >
-        <AppHeader description="Welcome to AC B!" />
+        <AppHeader description="Welcome to AC&B!" />
 
         <Form
           form={form}
