@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import {
   Typography,
   Input,
@@ -13,10 +13,12 @@ import {
   Space,
   Row,
   Col,
-  Tooltip
+  Tooltip,
+  Collapse
 } from 'antd'
 const { Title, Text } = Typography
 const { TabPane } = Tabs
+const { Panel } = Collapse
 import { useUserContext } from '@/core/context'
 import dayjs from 'dayjs'
 import { useLocation, useNavigate, useParams } from '@remix-run/react'
@@ -25,11 +27,12 @@ import { Api } from '@/core/trpc'
 import { PageLayout } from '@/designSystem'
 import JobSheetPDF from './JobSheetPDF'
 import { JobSheetTooltips } from './JobSheetTooltips'
+import JobSheetForm from './JobSheetForm'
 
 export default function JobManagementPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const [rollerBlindForm] = Form.useForm()
+  const [rollerBlindItems, setRollerBlindItems] = useState([{ id: 1 }])
   const [previewData, setPreviewData] = useState(null)
   const navigate = useNavigate()
 
@@ -103,7 +106,6 @@ export default function JobManagementPage() {
       })
       message.success('Job created successfully')
       setIsModalVisible(false)
-      rollerBlindForm.resetFields()
       refetch()
     } catch (error) {
       message.error('Failed to create job')
@@ -154,12 +156,16 @@ export default function JobManagementPage() {
     })
   }
 
+  const handleAddItem = useCallback(() => {
+    setRollerBlindItems(prev => [...prev, { id: prev.length + 1 }])
+  }, [])
+
   const handleRollerBlindSubmit = async (values) => {
     try {
-      const formattedJobSheet = {
-        ...values,
-        date: values.date.format('YYYY-MM-DD'),
-      }
+      const formattedJobSheet = values.rollerBlinds.map(item => ({
+        ...item,
+        date: item.date.format('YYYY-MM-DD'),
+      }))
       setPreviewData(formattedJobSheet)
     } catch (error) {
       message.error('Failed to create job sheet')
@@ -168,17 +174,19 @@ export default function JobManagementPage() {
 
   const handleConfirmJobSheet = async () => {
     try {
-      await createJobSheet({
-        data: {
-          ...previewData,
-          category: 'rollerBlinds',
-        },
-      })
-      message.success('New roller blind job sheet created')
+      await Promise.all(previewData.map(item =>
+        createJobSheet({
+          data: {
+            ...item,
+            category: 'rollerBlinds',
+          },
+        })
+      ))
+      message.success('New roller blind job sheets created')
       setPreviewData(null)
-      rollerBlindForm.resetFields()
+      setRollerBlindItems([{ id: 1 }])
     } catch (error) {
-      message.error('Failed to save job sheet')
+      message.error('Failed to save job sheets')
     }
   }
 
@@ -221,194 +229,22 @@ export default function JobManagementPage() {
 
         <div style={{ marginTop: '40px' }}>
           <Title level={3}>ACAB ROLLER BLIND ACMEDA WORKSHEET</Title>
-          <Form form={rollerBlindForm} onFinish={handleRollerBlindSubmit} layout="vertical">
-            <Row gutter={16}>
-              <Col span={8}>
-                <Tooltip title={JobSheetTooltips.customerName}>
-                  <Form.Item
-                    name="customerName"
-                    label="NAME"
-                    rules={[{ required: true, message: 'Please enter customer name' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-              <Col span={8}>
-                <Tooltip title={JobSheetTooltips.salesRep}>
-                  <Form.Item
-                    name="salesRep"
-                    label="REP"
-                    rules={[{ required: true, message: 'Please enter sales rep name' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-              <Col span={8}>
-                <Tooltip title={JobSheetTooltips.date}>
-                  <Form.Item
-                    name="date"
-                    label="DATE"
-                    rules={[{ required: true, message: 'Please select a date' }]}
-                  >
-                    <DatePicker style={{ width: '100%' }} />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={4}>
-                <Tooltip title={JobSheetTooltips.roomNumber}>
-                  <Form.Item
-                    name="roomNumber"
-                    label="ROOM"
-                    rules={[{ required: true, message: 'Please enter room number' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-              <Col span={4}>
-                <Tooltip title={JobSheetTooltips.tube}>
-                  <Form.Item
-                    name="tube"
-                    label="TUBE"
-                    rules={[{ required: true, message: 'Please enter tube' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-              <Col span={4}>
-                <Tooltip title={JobSheetTooltips.width}>
-                  <Form.Item
-                    name="width"
-                    label="WIDTH"
-                    rules={[{ required: true, message: 'Please enter width' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-              <Col span={4}>
-                <Tooltip title={JobSheetTooltips.drop}>
-                  <Form.Item
-                    name="drop"
-                    label="DROP"
-                    rules={[{ required: true, message: 'Please enter drop' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-              <Col span={4}>
-                <Tooltip title={JobSheetTooltips.fixing}>
-                  <Form.Item
-                    name="fixing"
-                    label="FIXING"
-                    rules={[{ required: true, message: 'Please enter fixing' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-              <Col span={4}>
-                <Tooltip title={JobSheetTooltips.baseFinish}>
-                  <Form.Item
-                    name="baseFinish"
-                    label="BASE FINISH"
-                    rules={[{ required: true, message: 'Please enter base finish' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={6}>
-                <Tooltip title={JobSheetTooltips.rollType}>
-                  <Form.Item
-                    name="rollType"
-                    label="ROLL TYPE"
-                    rules={[{ required: true, message: 'Please enter roll type' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-              <Col span={6}>
-                <Tooltip title={JobSheetTooltips.fabric}>
-                  <Form.Item
-                    name="fabric"
-                    label="FABRIC"
-                    rules={[{ required: true, message: 'Please enter fabric' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-              <Col span={6}>
-                <Tooltip title={JobSheetTooltips.bracketType}>
-                  <Form.Item
-                    name="bracketType"
-                    label="BRACKET"
-                    rules={[{ required: true, message: 'Please enter bracket type' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-              <Col span={6}>
-                <Tooltip title={JobSheetTooltips.controlType}>
-                  <Form.Item
-                    name="controlType"
-                    label="CONTROL TYPE"
-                    rules={[{ required: true, message: 'Please enter control type' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={8}>
-                <Tooltip title={JobSheetTooltips.controlSide}>
-                  <Form.Item
-                    name="controlSide"
-                    label="CONTROL SIDE"
-                    rules={[{ required: true, message: 'Please select control side' }]}
-                  >
-                    <Select>
-                      <Select.Option value="left">Left</Select.Option>
-                      <Select.Option value="right">Right</Select.Option>
-                    </Select>
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-              <Col span={8}>
-                <Tooltip title={JobSheetTooltips.controlColour}>
-                  <Form.Item
-                    name="controlColour"
-                    label="CONTROL COLOUR"
-                    rules={[{ required: true, message: 'Please enter control colour' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-              <Col span={8}>
-                <Tooltip title={JobSheetTooltips.chainLength}>
-                  <Form.Item
-                    name="chainLength"
-                    label="CHAIN LENGTH"
-                    rules={[{ required: true, message: 'Please enter chain length' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Tooltip>
-              </Col>
-            </Row>
+          <Form onFinish={handleRollerBlindSubmit} layout="vertical">
+            <Collapse accordion>
+              {rollerBlindItems.map((item, index) => (
+                <Panel header={`Roller Blind Item ${index + 1}`} key={item.id}>
+                  <JobSheetForm
+                    name={['rollerBlinds', index]}
+                    tooltips={JobSheetTooltips}
+                  />
+                </Panel>
+              ))}
+            </Collapse>
+            <Form.Item>
+              <Button type="dashed" onClick={handleAddItem} block>
+                <i className="las la-plus"></i> Add Roller Blind Item
+              </Button>
+            </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit">
                 Preview Job Sheet
@@ -421,6 +257,7 @@ export default function JobManagementPage() {
               title="Preview Job Sheet"
               visible={!!previewData}
               onCancel={() => setPreviewData(null)}
+              width={1000}
               footer={[
                 <Button key="print" onClick={handlePrintJobSheet}>
                   Print

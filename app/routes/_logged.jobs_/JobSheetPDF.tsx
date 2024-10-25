@@ -8,7 +8,7 @@ import {
 } from '@react-pdf/renderer'
 import React from 'react'
 
-type JobSheetData = {
+type JobSheetItem = {
   customerName: string
   salesRep: string
   date: string
@@ -27,6 +27,8 @@ type JobSheetData = {
   chainLength: string
 }
 
+type JobSheetData = JobSheetItem[]
+
 const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
@@ -40,6 +42,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 14,
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -64,75 +71,78 @@ const styles = StyleSheet.create({
 
 const JobSheetPDF: React.FC<{ data: JobSheetData }> = ({ data }) => (
   <Document>
-    <Page size="A4" style={styles.page}>
-      <View style={styles.section}>
-        <Text style={styles.title}>ACAB ROLLER BLIND ACMEDA WORKSHEET</Text>
-        <View style={styles.row}>
-          <Text style={styles.label}>NAME:</Text>
-          <Text style={styles.value}>{data.customerName}</Text>
+    {data.map((item, index) => (
+      <Page key={index} size="A4" style={styles.page}>
+        <View style={styles.section}>
+          <Text style={styles.title}>ACAB ROLLER BLIND ACMEDA WORKSHEET</Text>
+          <Text style={styles.subtitle}>Item {index + 1} of {data.length}</Text>
+          <View style={styles.row}>
+            <Text style={styles.label}>NAME:</Text>
+            <Text style={styles.value}>{item.customerName}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>REP:</Text>
+            <Text style={styles.value}>{item.salesRep}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>DATE:</Text>
+            <Text style={styles.value}>{item.date}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>ROOM:</Text>
+            <Text style={styles.value}>{item.roomNumber}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>TUBE:</Text>
+            <Text style={styles.value}>{item.tube}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>WIDTH:</Text>
+            <Text style={styles.value}>{item.width}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>DROP:</Text>
+            <Text style={styles.value}>{item.drop}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>FIXING:</Text>
+            <Text style={styles.value}>{item.fixing}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>BASE FINISH:</Text>
+            <Text style={styles.value}>{item.baseFinish}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>ROLL TYPE:</Text>
+            <Text style={styles.value}>{item.rollType}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>FABRIC:</Text>
+            <Text style={styles.value}>{item.fabric}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>BRACKET:</Text>
+            <Text style={styles.value}>{item.bracketType}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>CONTROL TYPE:</Text>
+            <Text style={styles.value}>{item.controlType}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>CONTROL SIDE:</Text>
+            <Text style={styles.value}>{item.controlSide}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>CONTROL COLOUR:</Text>
+            <Text style={styles.value}>{item.controlColour}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>CHAIN LENGTH:</Text>
+            <Text style={styles.value}>{item.chainLength}</Text>
+          </View>
         </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>REP:</Text>
-          <Text style={styles.value}>{data.salesRep}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>DATE:</Text>
-          <Text style={styles.value}>{data.date}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>ROOM:</Text>
-          <Text style={styles.value}>{data.roomNumber}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>TUBE:</Text>
-          <Text style={styles.value}>{data.tube}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>WIDTH:</Text>
-          <Text style={styles.value}>{data.width}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>DROP:</Text>
-          <Text style={styles.value}>{data.drop}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>FIXING:</Text>
-          <Text style={styles.value}>{data.fixing}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>BASE FINISH:</Text>
-          <Text style={styles.value}>{data.baseFinish}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>ROLL TYPE:</Text>
-          <Text style={styles.value}>{data.rollType}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>FABRIC:</Text>
-          <Text style={styles.value}>{data.fabric}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>BRACKET:</Text>
-          <Text style={styles.value}>{data.bracketType}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>CONTROL TYPE:</Text>
-          <Text style={styles.value}>{data.controlType}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>CONTROL SIDE:</Text>
-          <Text style={styles.value}>{data.controlSide}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>CONTROL COLOUR:</Text>
-          <Text style={styles.value}>{data.controlColour}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>CHAIN LENGTH:</Text>
-          <Text style={styles.value}>{data.chainLength}</Text>
-        </View>
-      </View>
-    </Page>
+      </Page>
+    ))}
   </Document>
 )
 
@@ -144,11 +154,8 @@ export const JobSheetPDFDownloadLink: React.FC<{ data: JobSheetData }> = ({
     fileName="job_sheet.pdf"
   >
     {({ loading }: { loading: boolean }) => (
-      <>
-        {loading ? <span>Loading document...</span> : <span>Download PDF</span>}
-      </>
+      loading ? <span>Loading document...</span> : <span>Download PDF</span>
     )}
   </PDFDownloadLink>
 )
-
 export default JobSheetPDF
