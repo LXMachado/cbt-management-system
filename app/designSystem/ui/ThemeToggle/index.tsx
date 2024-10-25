@@ -1,6 +1,6 @@
 import React from 'react';
 import { Switch } from 'antd';
-import { useTheme } from '../../../core/context/ThemeContext';
+import { useTheme } from '../../../core/context/internal/useUserContext';
 
 export const ThemeToggle: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
