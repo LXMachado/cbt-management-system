@@ -7,6 +7,7 @@ import { useLocation, useNavigate, useParams } from '@remix-run/react'
 import { useUploadPublic } from '@/plugins/upload/client'
 import { Api } from '@/core/trpc'
 import { PageLayout } from '@/designSystem'
+import { ThemeToggle } from '@/designSystem/ui/ThemeToggle'
 
 export default function HomePage() {
   const navigate = useNavigate()
@@ -35,7 +36,14 @@ export default function HomePage() {
   return (
     <PageLayout layout="full-width">
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
-        <Title level={2}>Dashboard</Title>
+        <Row justify="space-between" align="middle" style={{ marginBottom: '24px' }}>
+          <Col>
+            <Title level={2}>Dashboard</Title>
+          </Col>
+          <Col>
+            <ThemeToggle />
+          </Col>
+        </Row>
         <Text>
           Welcome to your operations dashboard. Here's a quick overview of your
           key metrics and recent activities.
