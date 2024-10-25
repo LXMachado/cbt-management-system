@@ -1,5 +1,4 @@
-import { ReactNode } from 'react'
-import { Api } from '../../trpc'
+import { ReactNode, useEffect, useState } from 'react'
 import { useMessageReceived, useMessageSend } from './hooks'
 
 type Props = {
@@ -7,15 +6,27 @@ type Props = {
 }
 
 const useWorkspace = () => {
-  const { data } = Api.configuration.getPublic.useQuery()
+  const [isSetup, setSetup] = useState(false)
 
-  const isActive = data?.['PUBLIC_MARBLISM_ENV'] === 'workspace'
+  const isActive = !import.meta.env.PROD
 
   useMessageSend(isActive)
 
   useMessageReceived(isActive)
 
-  return <></>
+  useEffect(() => {
+    if (isActive && !isSetup) {
+      const scriptToInject = document.createElement('script')
+
+      scriptToInject.src = '/assets/michelangelo.js'
+
+      document.body.appendChild(scriptToInject)
+
+      setSetup(true)
+    }
+  }, [isActive])
+
+  return {}
 }
 
 export const WorkspaceProvider: React.FC<Props> = ({ children }) => {
