@@ -8,7 +8,7 @@ type Props = {
   description?: string
 }
 
-export const AppHeader: React.FC<Props> = ({ title = 'AC B', description }) => {
+export const AppHeader: React.FC<Props> = ({ title = 'AC&B', description }) => {
   return (
     <>
       <Flex justify="center">
