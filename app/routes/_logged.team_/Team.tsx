@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Typography, Card, List, Button, Modal, Form, Input, Select, message } from 'antd';
 import { Api } from '@/core/trpc';
 import { PageLayout } from '@/designSystem';
-import { Prisma } from '@prisma/client';
+import { Prisma, User, Role } from '@prisma/client';
 
 const { Title } = Typography;
 
@@ -32,12 +32,12 @@ export default function Team() {
       if (editingMember) {
         await updateTeamMember({ 
           where: { id: editingMember.id }, 
-          data: { ...values, role: values.role } 
+          data: { ...values, role: { connect: { id: values.role } } } 
         });
         message.success('Team member updated successfully');
       } else {
         await createTeamMember({ 
-          data: { ...values, role: values.role } 
+          data: { ...values, role: { connect: { id: values.role } } } 
         });
         message.success('Team member added successfully');
       }
@@ -49,7 +49,7 @@ export default function Team() {
     }
   };
 
-  const handleDelete = (member: UserWithRole) => {
+  const handleDelete = (member: Prisma.UserGetPayload<{ include: { role: true } }>) => {
     Modal.confirm({
       title: 'Are you sure you want to delete this team member?',
       onOk: async () => {
@@ -78,7 +78,7 @@ export default function Team() {
           <Card title={role} key={role} style={{ marginBottom: '20px' }}>
             <List
               loading={isLoading}
-              dataSource={teamMembers?.filter((member) => member.role === role)}
+              dataSource={teamMembers?.filter((member) => member.role.name === role)}
               renderItem={(member) => (
                 <List.Item
                   actions={[
@@ -88,7 +88,7 @@ export default function Team() {
                 >
                   <List.Item.Meta
                     title={member.name}
-                    description={`Email: ${member.email}, Role: ${member.role}`}
+                    description={`Email: ${member.email}, Role: ${member.role.name}`}
                   />
                 </List.Item>
               )}

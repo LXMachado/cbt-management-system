@@ -2,6 +2,12 @@ enum UserStatus {
     INVITED
     VERIFIED
 }
+model Role {
+    id    String @id @default(uuid())
+    name  String @unique
+    users User[]
+}
+
 model User {
     id                String             @id @default(uuid())
     name              String?
@@ -13,10 +19,8 @@ model User {
 
     // this is the role of the user for the application
     globalRole        String             @default('USER')
-    role              String?            // New field added
-    password          String?            @password @omit
-    createdAt         DateTime           @default(now())
-    updatedAt         DateTime           @updatedAt @default(now())
+    roleId            String?
+    role              Role?              @relation(fields: [roleId], references: [id])
     password          String?            @password @omit
     createdAt         DateTime           @default(now())
     updatedAt         DateTime           @updatedAt @default(now())

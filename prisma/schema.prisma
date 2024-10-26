@@ -17,6 +17,12 @@ enum UserStatus {
   VERIFIED
 }
 
+model Role {
+  id    String @id() @default(uuid())
+  name  String @unique()
+  users User[]
+}
+
 /// @@auth
 /// @@allow('all', auth().id == this.id)
 /// @@allow('all', auth().globalRole == 'ADMIN')
@@ -30,7 +36,8 @@ model User {
   tokenInvitation   String?
   status            UserStatus         @default(VERIFIED)
   globalRole        String             @default("USER")
-  role              String?
+  roleId            String?
+  role              Role?              @relation(fields: [roleId], references: [id])
   /// @password
   /// @omit
   password          String?

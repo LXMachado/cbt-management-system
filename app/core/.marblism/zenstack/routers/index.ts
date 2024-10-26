@@ -1,6 +1,7 @@
 /* eslint-disable */
 import type { unsetMarker, AnyRouter, AnyRootConfig, CreateRouterInner, Procedure, ProcedureBuilder, ProcedureParams, ProcedureRouterRecord, ProcedureType } from "@trpc/server";
 import type { PrismaClient } from "@prisma/client";
+import createRoleRouter from "./Role.router";
 import createUserRouter from "./User.router";
 import createCustomerRouter from "./Customer.router";
 import createProductRouter from "./Product.router";
@@ -11,6 +12,7 @@ import createInstallationRouter from "./Installation.router";
 import createJobNoteRouter from "./JobNote.router";
 import createJobScheduleRouter from "./JobSchedule.router";
 import createJobSheetRouter from "./JobSheet.router";
+import { ClientType as RoleClientType } from "./Role.router";
 import { ClientType as UserClientType } from "./User.router";
 import { ClientType as CustomerClientType } from "./Customer.router";
 import { ClientType as ProductClientType } from "./Product.router";
@@ -45,6 +47,7 @@ export function db(ctx: any) {
 
 export function createRouter<Config extends BaseConfig>(router: RouterFactory<Config>, procedure: ProcBuilder<Config>) {
     return router({
+        role: createRoleRouter(router, procedure),
         user: createUserRouter(router, procedure),
         customer: createCustomerRouter(router, procedure),
         product: createProductRouter(router, procedure),
@@ -60,6 +63,7 @@ export function createRouter<Config extends BaseConfig>(router: RouterFactory<Co
 }
 
 export interface ClientType<AppRouter extends AnyRouter> {
+    role: RoleClientType<AppRouter>;
     user: UserClientType<AppRouter>;
     customer: CustomerClientType<AppRouter>;
     product: ProductClientType<AppRouter>;
