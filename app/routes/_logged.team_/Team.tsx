@@ -2,22 +2,25 @@ import React, { useState } from 'react';
 import { Typography, Card, List, Button, Modal, Form, Input, Select, message } from 'antd';
 import { Api } from '@/core/trpc';
 import { PageLayout } from '@/designSystem';
+import { Prisma } from '@prisma/client';
 
 const { Title } = Typography;
 
 const teamRoles = ['Admin', 'Sales', 'Blind Manufacturing', 'Curtain Manufacturing', 'Installers', 'Scheduling'];
 
+type UserWithRole = Prisma.UserGetPayload<{ include: { role: true } }>;
+
 export default function Team() {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingMember, setEditingMember] = useState(null);
+  const [editingMember, setEditingMember] = useState<UserWithRole | null>(null);
   const [form] = Form.useForm();
 
-  const { data: teamMembers, isLoading, refetch } = Api.teamMember.findMany.useQuery();
-  const { mutateAsync: createTeamMember } = Api.teamMember.create.useMutation();
-  const { mutateAsync: updateTeamMember } = Api.teamMember.update.useMutation();
-  const { mutateAsync: deleteTeamMember } = Api.teamMember.delete.useMutation();
+  const { data: teamMembers, isLoading, refetch } = Api.user.findMany.useQuery({ include: { role: true } });
+  const { mutateAsync: createTeamMember } = Api.user.create.useMutation();
+  const { mutateAsync: updateTeamMember } = Api.user.update.useMutation();
+  const { mutateAsync: deleteTeamMember } = Api.user.delete.useMutation();
 
-  const showModal = (member = null) => {
+  const showModal = (member: UserWithRole | null = null) => {
     setEditingMember(member);
     form.setFieldsValue(member || {});
     setIsModalVisible(true);
@@ -27,10 +30,15 @@ export default function Team() {
     try {
       const values = await form.validateFields();
       if (editingMember) {
-        await updateTeamMember({ where: { id: editingMember.id }, data: values });
+        await updateTeamMember({ 
+          where: { id: editingMember.id }, 
+          data: { ...values, role: values.role } 
+        });
         message.success('Team member updated successfully');
       } else {
-        await createTeamMember({ data: values });
+        await createTeamMember({ 
+          data: { ...values, role: values.role } 
+        });
         message.success('Team member added successfully');
       }
       setIsModalVisible(false);
@@ -41,12 +49,14 @@ export default function Team() {
     }
   };
 
-  const handleDelete = (member) => {
+  const handleDelete = (member: UserWithRole) => {
     Modal.confirm({
       title: 'Are you sure you want to delete this team member?',
       onOk: async () => {
         try {
-          await deleteTeamMember({ where: { id: member.id } });
+          await deleteTeamMember({ 
+            where: { id: member.id }
+          });
           message.success('Team member deleted successfully');
           refetch();
         } catch (error) {
@@ -78,7 +88,7 @@ export default function Team() {
                 >
                   <List.Item.Meta
                     title={member.name}
-                    description={`Email: ${member.email}`}
+                    description={`Email: ${member.email}, Role: ${member.role}`}
                   />
                 </List.Item>
               )}

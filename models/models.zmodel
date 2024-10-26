@@ -2,7 +2,6 @@ enum UserStatus {
     INVITED
     VERIFIED
 }
-
 model User {
     id                String             @id @default(uuid())
     name              String?
@@ -14,6 +13,10 @@ model User {
 
     // this is the role of the user for the application
     globalRole        String             @default('USER')
+    role              String?            // New field added
+    password          String?            @password @omit
+    createdAt         DateTime           @default(now())
+    updatedAt         DateTime           @updatedAt @default(now())
     password          String?            @password @omit
     createdAt         DateTime           @default(now())
     updatedAt         DateTime           @updatedAt @default(now())

@@ -30,6 +30,7 @@ model User {
   tokenInvitation   String?
   status            UserStatus         @default(VERIFIED)
   globalRole        String             @default("USER")
+  role              String?
   /// @password
   /// @omit
   password          String?
