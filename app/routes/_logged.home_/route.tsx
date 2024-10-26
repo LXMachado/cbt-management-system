@@ -112,7 +112,7 @@ export default function HomePage() {
         </Row>
 
         <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8}>
             <Button
               type="primary"
               icon={<i className="las la-user-plus" />}
@@ -122,7 +122,7 @@ export default function HomePage() {
               Create New Customer Profile
             </Button>
           </Col>
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8}>
             <Button
               type="primary"
               icon={<i className="las la-plus-circle" />}
@@ -130,6 +130,16 @@ export default function HomePage() {
               block
             >
               Create New Job
+            </Button>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Button
+              type="primary"
+              icon={<i className="las la-users" />}
+              onClick={() => navigate('/team')}
+              block
+            >
+              Team
             </Button>
           </Col>
         </Row>
