@@ -61,6 +61,14 @@ export const NavigationLayout: React.FC<Props> = ({ children }) => {
 
       onClick: () => goTo('/catalog'),
     },
+
+    {
+      key: '/team',
+      label: 'Team',
+      position: 'leftbar',
+
+      onClick: () => goTo('/team'),
+    },
   ]
 
   const itemsVisible = items

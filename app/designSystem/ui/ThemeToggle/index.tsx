@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Switch } from 'antd';
-import { useTheme } from '../../../core/context/internal/useUserContext';
 
 export const ThemeToggle: React.FC = () => {
-  const { theme, toggleTheme } = useTheme();
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+  };
 
   return (
     <Switch

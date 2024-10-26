@@ -67,6 +67,14 @@ const styles = StyleSheet.create({
   value: {
     width: '70%',
   },
+  downloadLink: {
+    textDecoration: 'none',
+    padding: '10px',
+    borderRadius: '5px',
+    backgroundColor: '#007bff',
+    color: '#ffffff',
+    cursor: 'pointer',
+  },
 })
 
 const JobSheetPDF: React.FC<{ data: JobSheetData }> = ({ data }) => (
@@ -152,8 +160,9 @@ export const JobSheetPDFDownloadLink: React.FC<{ data: JobSheetData }> = ({
   <PDFDownloadLink
     document={<JobSheetPDF data={data} />}
     fileName="job_sheet.pdf"
+    style={styles.downloadLink}
   >
-    {({ loading }: { loading: boolean }) => (
+    {({ loading }) => (
       loading ? <span>Loading document...</span> : <span>Download PDF</span>
     )}
   </PDFDownloadLink>
