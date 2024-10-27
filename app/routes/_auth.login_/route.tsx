@@ -1,5 +1,5 @@
 import { Api } from '@/core/trpc'
-import { AppHeader } from '@/designSystem/ui/AppHeader'
+import { Logo } from '@/designSystem/layouts/NavigationLayout/components/Logo'
 import { useNavigate, useSearchParams } from '@remix-run/react'
 import { Button, Flex, Form, Input, Typography } from 'antd'
 import { useEffect, useState } from 'react'
@@ -66,7 +66,7 @@ export default function LoginPage() {
         }}
         gap="middle"
       >
-        <AppHeader title="AC&B" description="Welcome!" />
+        <Logo height="60" />
 
         {errorKey && (
           <Typography.Text type="danger">{errorMessage}</Typography.Text>
