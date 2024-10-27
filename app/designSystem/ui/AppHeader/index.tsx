@@ -12,7 +12,7 @@ export const AppHeader: React.FC<Props> = ({ title = 'AC&B', description }) => {
   return (
     <Flex align="center" justify="space-between">
       <Flex align="center" gap={16}>
-        <Logo height="60" />
+        <Logo />
         <Flex vertical>
           <Title level={3} style={{ margin: 0 }}>
             {title}

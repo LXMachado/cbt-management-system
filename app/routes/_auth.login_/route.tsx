@@ -61,12 +61,14 @@ export default function LoginPage() {
         vertical
         style={{
           width: '340px',
-          paddingBottom: '100px',
-          paddingTop: '100px',
+          paddingBottom: '40px',
+          paddingTop: '40px',
         }}
         gap="middle"
       >
-        <Logo height="60" />
+        <Flex justify="center" style={{ marginBottom: '20px' }}>
+          <Logo isLabel={true} />
+        </Flex>
 
         {errorKey && (
           <Typography.Text type="danger">{errorMessage}</Typography.Text>
@@ -117,16 +119,16 @@ export default function LoginPage() {
           </Form.Item>
         </Form>
 
-        <Button
-          ghost
-          style={{ border: 'none' }}
-          onClick={() => router('/register')}
-        >
-          <Flex gap={'small'} justify="center">
-            <Typography.Text type="secondary">No account?</Typography.Text>{' '}
-            <Typography.Text>Sign up</Typography.Text>
-          </Flex>
-        </Button>
+        <Flex justify="center">
+          <Typography.Text type="secondary">No account?</Typography.Text>
+          <Button
+            type="link"
+            onClick={() => router('/register')}
+            style={{ padding: '0 0 0 8px' }}
+          >
+            Sign up
+          </Button>
+        </Flex>
       </Flex>
     </Flex>
   )
