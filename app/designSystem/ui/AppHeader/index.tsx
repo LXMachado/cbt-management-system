@@ -10,17 +10,16 @@ type Props = {
 
 export const AppHeader: React.FC<Props> = ({ title = 'AC&B', description }) => {
   return (
-    <>
-      <Flex justify="center">
-        <Logo height="100" />
+    <Flex align="center" justify="space-between">
+      <Flex align="center" gap={16}>
+        <Logo height="60" />
+        <Flex vertical>
+          <Title level={3} style={{ margin: 0 }}>
+            {title}
+          </Title>
+          {description && <Text type="secondary">{description}</Text>}
+        </Flex>
       </Flex>
-
-      <Flex vertical align="center">
-        <Title level={3} style={{ margin: 0 }}>
-          {title}
-        </Title>
-        {description && <Text type="secondary">{description}</Text>}
-      </Flex>
-    </>
+    </Flex>
   )
 }

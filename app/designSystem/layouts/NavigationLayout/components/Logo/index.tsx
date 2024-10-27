@@ -7,7 +7,7 @@ interface Props extends ImgHTMLAttributes<HTMLImageElement> {
 }
 
 export const Logo: React.FC<Props> = ({
-  height = 50,
+  height = 40,
   isLabel = false,
   style,
   ...props
@@ -21,7 +21,7 @@ export const Logo: React.FC<Props> = ({
   return (
     <Flex align="center" gap={10} onClick={() => goTo('/home')}>
       <img
-        src="https://marblism-dashboard-api--production-public.s3.us-west-1.amazonaws.com/gQ3NFU-acb-Bi8q"
+        src="https://example.com/new-logo.png"
         {...props}
         alt="Logo"
         height={height}
@@ -29,7 +29,8 @@ export const Logo: React.FC<Props> = ({
           borderRadius: '5px',
           cursor: 'pointer',
           objectFit: 'contain',
-          height: `${height}px`,
+          width: 'auto',
+          maxHeight: `${height}px`,
           ...style,
         }}
         onError={event => {
