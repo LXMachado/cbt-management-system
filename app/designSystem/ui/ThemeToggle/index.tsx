@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
-import { Switch } from 'antd';
+import React from 'react';
+import { Switch, ConfigProvider } from 'antd';
+import { darkTheme, lightTheme } from '../../theme/theme';
+import { ThemeConfig } from 'antd/es/config-provider/context';
 
 export const ThemeToggle: React.FC = () => {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [{ theme }, setTheme] = ConfigProvider.useConfig();
 
   const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+    const newTheme: ThemeConfig = theme?.colorBgBase === '#ffffff' ? darkTheme : lightTheme;
+    setTheme((prevConfig) => ({ ...prevConfig, theme: newTheme }));
   };
 
   return (
     <Switch
-      checked={theme === 'dark'}
+      checked={theme?.colorBgBase !== '#ffffff'}
       onChange={toggleTheme}
       checkedChildren="🌙"
       unCheckedChildren="☀️"

@@ -66,8 +66,8 @@ export default function LoginPage() {
         }}
         gap="middle"
       >
-        <Flex justify="center" style={{ marginBottom: '20px' }}>
-          <Logo isLabel={true} />
+        <Flex justify="center" align="center" style={{ marginBottom: '20px', height: '60px' }}>
+          <Logo isLabel={true} style={{ height: '100%', width: 'auto' }} />
         </Flex>
 
         {errorKey && (
