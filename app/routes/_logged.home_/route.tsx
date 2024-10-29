@@ -7,7 +7,6 @@ import { useLocation, useNavigate, useParams } from '@remix-run/react'
 import { useUploadPublic } from '@/plugins/upload/client'
 import { Api } from '@/core/trpc'
 import { PageLayout } from '@/designSystem'
-import { ThemeToggle } from '@/designSystem/ui/ThemeToggle'
 
 export default function HomePage() {
   const navigate = useNavigate()
@@ -39,9 +38,6 @@ export default function HomePage() {
         <Row justify="space-between" align="middle" style={{ marginBottom: '24px' }}>
           <Col>
             <Title level={2}>Dashboard</Title>
-          </Col>
-          <Col>
-            <ThemeToggle />
           </Col>
         </Row>
         <Text>
