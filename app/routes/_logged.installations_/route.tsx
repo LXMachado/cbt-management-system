@@ -47,9 +47,9 @@ export default function InstallationTrackingPage() {
   return (
     <PageLayout layout="full-width">
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px' }}>
-        <Title level={2}>
-          <i className="las la-tools"></i> Installation Tracking
-        </Title>
+        <Title level={2} style={{}}>
+          <i className="las la-tools"></i>Installation Tracking
+                                            </Title>
         <Paragraph>
           Monitor ongoing installations and update their progress to keep
           stakeholders informed.

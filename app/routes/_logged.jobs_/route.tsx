@@ -8,24 +8,18 @@ import {
   Form,
   Select,
   message,
-  Space,
-  Upload
 } from 'antd'
 const { Title, Text } = Typography
 import { useUserContext } from '@/core/context'
 import dayjs from 'dayjs'
 import { useNavigate } from '@remix-run/react'
-import { useUploadPublic } from '@/plugins/upload/client'
 import { Api } from '@/core/trpc'
 import { PageLayout } from '@/designSystem'
-import { UploadOutlined } from '@ant-design/icons'
 
 export default function JobManagementPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const [fileList, setFileList] = useState([])
   const navigate = useNavigate()
-  const { mutateAsync: upload } = useUploadPublic()
 
   const {
     data: jobs,
@@ -39,7 +33,6 @@ export default function JobManagementPage() {
   const { data: jobStatuses } = Api.jobStatus.findMany.useQuery()
   const { mutateAsync: createJob } = Api.job.create.useMutation()
   const { mutateAsync: updateJob } = Api.job.update.useMutation()
-  const { mutateAsync: createJobSheet } = Api.jobSheet.create.useMutation()
 
   const handleSearch = (value: string) => {
     setSearchTerm(value)
@@ -147,27 +140,6 @@ export default function JobManagementPage() {
     })
   }
 
-  const handleUpload = async (options) => {
-    const { file, onSuccess, onError } = options;
-    try {
-      const result = await upload({ file });
-      onSuccess(result, file);
-    } catch (err) {
-      onError(err);
-    }
-  };
-
-  const handleChange = (info) => {
-    let newFileList = [...info.fileList];
-    newFileList = newFileList.map(file => {
-      if (file.response) {
-        file.url = file.response.url;
-      }
-      return file;
-    });
-    setFileList(newFileList);
-  };
-
   return (
     <PageLayout layout="full-width">
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '20px' }}>
@@ -200,30 +172,6 @@ export default function JobManagementPage() {
           rowKey="id"
           style={{ marginTop: '20px' }}
         />
-
-        <div style={{ marginTop: '40px' }}>
-          <Title level={3}>Job Sheets</Title>
-          <Upload
-            customRequest={handleUpload}
-            onChange={handleChange}
-            fileList={fileList}
-            multiple
-          >
-            <Button icon={<UploadOutlined />}>Upload Job Sheet Image</Button>
-          </Upload>
-          {fileList.length > 0 && (
-            <div style={{ marginTop: '20px' }}>
-              <Title level={4}>Uploaded Job Sheets:</Title>
-              {fileList.map((file, index) => (
-                <div key={index}>
-                  <a href={file.url} target="_blank" rel="noopener noreferrer">
-                    {file.name}
-                  </a>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
     </PageLayout>
   )
