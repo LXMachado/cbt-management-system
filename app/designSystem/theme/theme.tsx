@@ -16,7 +16,7 @@ export const Theme: ThemeConfig = {
     colorBorder: '#3f3f45',
     colorBorderSecondary: '#27272a',
     fontFamily: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial`,
-    fontSize: 14,
+    fontSize: 16,
     borderRadius: 6,
     lineWidth: 1,
   },
@@ -33,12 +33,13 @@ export const Theme: ThemeConfig = {
     },
     Button: {
       paddingInlineSM: 11,
+      size: 11,
     },
   },
 }
 
 // Custom tokens for your own usage (not part of Ant Design's theme config)
-export const CustomThemeTokens = {
-  headerBorderColor: '#3f3f45',
-  siderBorderColor: '#3f3f45',
-}
+// export const CustomThemeTokens = {
+//   headerBorderColor: '#3f3f45',
+//   siderBorderColor: '#3f3f45',
+// }

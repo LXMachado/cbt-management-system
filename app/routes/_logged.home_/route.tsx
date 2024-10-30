@@ -1,6 +1,6 @@
 import React from 'react'
 import { Typography, Row, Col, Card, Statistic, Button } from 'antd'
-const { Title, Text } = Typography
+const { Title, Text, Paragraph } = Typography
 import { useUserContext } from '@/core/context'
 import dayjs from 'dayjs'
 import { useLocation, useNavigate, useParams } from '@remix-run/react'
@@ -37,13 +37,13 @@ export default function HomePage() {
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
         <Row justify="space-between" align="middle" style={{ marginBottom: '24px' }}>
           <Col>
-            <Title level={2}>Dashboard</Title>
+            <h1>Dashboard</h1>
           </Col>
         </Row>
-        <Text>
+        <Paragraph>
           Welcome to your operations dashboard. Here's a quick overview of your
           key metrics and recent activities.
-        </Text>
+        </Paragraph>
 
         <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
           <Col xs={24} sm={12}>
@@ -71,7 +71,7 @@ export default function HomePage() {
             <Card
               title="Recent Customers"
               extra={
-                <Button onClick={() => navigate('/customers')}>View All</Button>
+                <Button size="large" onClick={() => navigate('/customers')}>View All</Button>
               }
             >
               {recentCustomers?.map(customer => (
@@ -89,7 +89,7 @@ export default function HomePage() {
             <Card
               title="Recent Jobs"
               extra={
-                <Button onClick={() => navigate('/jobs')}>View All</Button>
+                <Button size="large" onClick={() => navigate('/jobs')}>View All</Button>
               }
             >
               {recentJobs?.map(job => (
@@ -114,9 +114,10 @@ export default function HomePage() {
               icon={<i className="las la-user-plus" />}
               onClick={() => navigate('/customers')}
               block
+              size="large" style={{}}
             >
-              Create New Customer Profile
-            </Button>
+              New Customer Profile
+                                      </Button>
           </Col>
           <Col xs={24} sm={8}>
             <Button
@@ -124,6 +125,7 @@ export default function HomePage() {
               icon={<i className="las la-plus-circle" />}
               onClick={() => navigate('/jobs')}
               block
+              size="large"
             >
               Create New Job
             </Button>
@@ -134,6 +136,7 @@ export default function HomePage() {
               icon={<i className="las la-users" />}
               onClick={() => navigate('/team')}
               block
+              size="large"
             >
               Team
             </Button>
