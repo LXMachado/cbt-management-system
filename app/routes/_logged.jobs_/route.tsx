@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import {
   Typography,
   Input,
@@ -8,33 +8,24 @@ import {
   Form,
   Select,
   message,
-  Tabs,
-  DatePicker,
   Space,
-  Row,
-  Col,
-  Tooltip,
-  Collapse
+  Upload
 } from 'antd'
 const { Title, Text } = Typography
-const { TabPane } = Tabs
-const { Panel } = Collapse
 import { useUserContext } from '@/core/context'
 import dayjs from 'dayjs'
-import { useLocation, useNavigate, useParams } from '@remix-run/react'
+import { useNavigate } from '@remix-run/react'
 import { useUploadPublic } from '@/plugins/upload/client'
 import { Api } from '@/core/trpc'
 import { PageLayout } from '@/designSystem'
-import JobSheetPDF from './JobSheetPDF'
-import { JobSheetTooltips } from './JobSheetTooltips'
-import JobSheetForm from './JobSheetForm'
+import { UploadOutlined } from '@ant-design/icons'
 
 export default function JobManagementPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const [rollerBlindItems, setRollerBlindItems] = useState([{ id: 1 }])
-  const [previewData, setPreviewData] = useState(null)
+  const [fileList, setFileList] = useState([])
   const navigate = useNavigate()
+  const { mutateAsync: upload } = useUploadPublic()
 
   const {
     data: jobs,
@@ -156,43 +147,26 @@ export default function JobManagementPage() {
     })
   }
 
-  const handleAddItem = useCallback(() => {
-    setRollerBlindItems(prev => [...prev, { id: prev.length + 1 }])
-  }, [])
-
-  const handleRollerBlindSubmit = async (values) => {
+  const handleUpload = async (options) => {
+    const { file, onSuccess, onError } = options;
     try {
-      const formattedJobSheet = values.rollerBlinds.map(item => ({
-        ...item,
-        date: item.date.format('YYYY-MM-DD'),
-      }))
-      setPreviewData(formattedJobSheet)
-    } catch (error) {
-      message.error('Failed to create job sheet')
+      const result = await upload({ file });
+      onSuccess(result, file);
+    } catch (err) {
+      onError(err);
     }
-  }
+  };
 
-  const handleConfirmJobSheet = async () => {
-    try {
-      await Promise.all(previewData.map(item =>
-        createJobSheet({
-          data: {
-            ...item,
-            category: 'rollerBlinds',
-          },
-        })
-      ))
-      message.success('New roller blind job sheets created')
-      setPreviewData(null)
-      setRollerBlindItems([{ id: 1 }])
-    } catch (error) {
-      message.error('Failed to save job sheets')
-    }
-  }
-
-  const handlePrintJobSheet = () => {
-    window.print()
-  }
+  const handleChange = (info) => {
+    let newFileList = [...info.fileList];
+    newFileList = newFileList.map(file => {
+      if (file.response) {
+        file.url = file.response.url;
+      }
+      return file;
+    });
+    setFileList(newFileList);
+  };
 
   return (
     <PageLayout layout="full-width">
@@ -228,50 +202,26 @@ export default function JobManagementPage() {
         />
 
         <div style={{ marginTop: '40px' }}>
-          <Title level={3}>ACAB ROLLER BLIND ACMEDA WORKSHEET</Title>
-          <Form onFinish={handleRollerBlindSubmit} layout="vertical">
-            <Collapse accordion>
-              {rollerBlindItems.map((item, index) => (
-                <Panel header={`Roller Blind Item ${index + 1}`} key={item.id}>
-                  <JobSheetForm
-                    name={['rollerBlinds', index]}
-                    tooltips={JobSheetTooltips}
-                  />
-                </Panel>
+          <Title level={3}>Job Sheets</Title>
+          <Upload
+            customRequest={handleUpload}
+            onChange={handleChange}
+            fileList={fileList}
+            multiple
+          >
+            <Button icon={<UploadOutlined />}>Upload Job Sheet Image</Button>
+          </Upload>
+          {fileList.length > 0 && (
+            <div style={{ marginTop: '20px' }}>
+              <Title level={4}>Uploaded Job Sheets:</Title>
+              {fileList.map((file, index) => (
+                <div key={index}>
+                  <a href={file.url} target="_blank" rel="noopener noreferrer">
+                    {file.name}
+                  </a>
+                </div>
               ))}
-            </Collapse>
-            <Form.Item>
-              <Button type="dashed" onClick={handleAddItem} block>
-                <i className="las la-plus"></i> Add Roller Blind Item
-              </Button>
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Preview Job Sheet
-              </Button>
-            </Form.Item>
-          </Form>
-
-          {previewData && (
-            <Modal
-              title="Preview Job Sheet"
-              visible={!!previewData}
-              onCancel={() => setPreviewData(null)}
-              width={1000}
-              footer={[
-                <Button key="print" onClick={handlePrintJobSheet}>
-                  Print
-                </Button>,
-                <Button key="confirm" type="primary" onClick={handleConfirmJobSheet}>
-                  Confirm and Save
-                </Button>,
-                <Button key="close" onClick={() => setPreviewData(null)}>
-                  Close
-                </Button>,
-              ]}
-            >
-              <JobSheetPDF data={previewData} />
-            </Modal>
+            </div>
           )}
         </div>
       </div>

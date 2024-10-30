@@ -6,7 +6,8 @@ interface Props extends ImgHTMLAttributes<HTMLImageElement> {
 }
 
 export const Logo: React.FC<Props> = ({ isLabel = false, style, ...props }) => {
-  const imgSrc = 'https://imgur.com/mSihrFB'
+  // Use the direct image URL by adding .png to the ID
+  const imgSrc = 'https://i.imgur.com/mSihrFB.png'
 
   const handleImageError = (
     e: React.SyntheticEvent<HTMLImageElement, Event>,
@@ -17,10 +18,15 @@ export const Logo: React.FC<Props> = ({ isLabel = false, style, ...props }) => {
   return (
     <Flex align="center" gap={10}>
       <img
-        src={'https://imgur.com/mSihrFB'}
+        src={imgSrc}
         {...props}
         alt="Logo"
-        style={{ objectFit: 'contain', height: '100%', width: 'auto' }}
+        style={{
+          objectFit: 'contain',
+          maxHeight: '50px', // Set a specific maxHeight to prevent it from becoming too large
+          width: 'auto', // Let width adjust proportionally
+          ...style, // Merge with any additional styles passed as props
+        }}
         onError={handleImageError}
       />
       {isLabel && (
