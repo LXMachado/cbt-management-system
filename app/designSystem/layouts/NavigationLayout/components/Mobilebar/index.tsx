@@ -39,11 +39,11 @@ export const Mobilebar: React.FC<Props> = ({ keySelected, items }) => {
           {user && (
             <Flex>
               <Avatar
-                src={user.pictureUrl}
+                src={"https://imgur.com/mSihrFB"}
                 alt={user.name}
                 size="small"
                 onClick={() => router('/profile')}
-                style={{ cursor: 'pointer' }}
+                style={{"cursor":"pointer"}}
               >
                 {Utility.stringToInitials(user.name)}
               </Avatar>

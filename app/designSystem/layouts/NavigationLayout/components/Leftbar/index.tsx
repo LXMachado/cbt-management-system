@@ -27,7 +27,7 @@ export const Leftbar: React.FC<Props> = ({
       style={{
         width: '250px',
         backgroundColor: Theme.components?.Layout?.siderBg,
-        borderRight: Theme.components?.Layout?.siderBorderRight,
+        borderRight: Theme.token?.borderWidth,
       }}
     >
       <Menu

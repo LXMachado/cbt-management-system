@@ -6,31 +6,26 @@ interface Props extends ImgHTMLAttributes<HTMLImageElement> {
 }
 
 export const Logo: React.FC<Props> = ({ isLabel = false, style, ...props }) => {
-  const imgSrc = 'https://acb-logo.example.com/logo.png'
+  const imgSrc = 'https://imgur.com/mSihrFB'
 
   const handleImageError = (
     e: React.SyntheticEvent<HTMLImageElement, Event>,
   ) => {
-    console.error('Primary logo image failed to load. Using fallback.', e)
-    e.currentTarget.src = 'https://acb-fallback.example.com/logo.png'
+    console.error('Logo image failed to load.', e)
   }
 
   return (
     <Flex align="center" gap={10}>
       <img
-        src={imgSrc}
+        src={'https://imgur.com/mSihrFB'}
         {...props}
         alt="Logo"
-        style={{
-          borderRadius: '5px',
-          objectFit: 'contain',
-          ...style,
-        }}
+        style={{ objectFit: 'contain', height: '100%', width: 'auto' }}
         onError={handleImageError}
       />
       {isLabel && (
         <Typography.Title level={3} style={{ margin: '0px', fontSize: '24px' }}>
-          AC B
+          AC&B
         </Typography.Title>
       )}
     </Flex>
