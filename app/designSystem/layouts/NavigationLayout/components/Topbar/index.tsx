@@ -30,8 +30,8 @@ export const Topbar: React.FC<Props> = ({ keySelected, items }) => {
         align="center"
         className="px-4 py-2"
         style={{
-          backgroundColor: Theme.components?.Layout?.headerBg,
-          borderBottom: Theme.components?.Layout?.headerBorderBottom,
+          backgroundColor: Theme.components?.Layout?.headerBg || '#fff', // Provide fallback value for background color
+          borderBottom: '1px solid #ccc', // Replace with a static border value if Theme does not have headerBorderBottom
         }}
       >
         <Flex>
@@ -42,7 +42,7 @@ export const Topbar: React.FC<Props> = ({ keySelected, items }) => {
           <Menu
             mode="horizontal"
             items={items}
-            selectedKeys={[keySelected]}
+            selectedKeys={keySelected ? [keySelected] : []} // Ensure keySelected is properly handled if undefined
             overflowedIndicator={<MenuOutlined />}
             style={{ flex: 1 }}
           />

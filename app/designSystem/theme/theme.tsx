@@ -1,5 +1,5 @@
-import { theme } from 'antd';
-import { ThemeConfig } from 'antd/es/config-provider/context';
+import { theme } from 'antd'
+import { ThemeConfig } from 'antd/es/config-provider/context'
 
 export const Theme: ThemeConfig = {
   algorithm: theme.darkAlgorithm,
@@ -22,11 +22,11 @@ export const Theme: ThemeConfig = {
   },
   components: {
     Layout: {
+      // Removed 'headerBorderColor' as it doesn't exist in the Layout component token
       headerBg: 'black',
       footerBg: 'black',
       siderBg: 'black',
-      headerBorderColor: '#3f3f45',
-      siderBorderColor: '#3f3f45',
+      // Use a valid property like 'colorBorder' directly or move to styles
     },
     Menu: {
       itemHeight: 30,
@@ -35,4 +35,10 @@ export const Theme: ThemeConfig = {
       paddingInlineSM: 11,
     },
   },
-};
+}
+
+// Custom tokens for your own usage (not part of Ant Design's theme config)
+export const CustomThemeTokens = {
+  headerBorderColor: '#3f3f45',
+  siderBorderColor: '#3f3f45',
+}

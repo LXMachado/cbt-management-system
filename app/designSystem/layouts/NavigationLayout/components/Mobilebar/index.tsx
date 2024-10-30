@@ -24,26 +24,31 @@ export const Mobilebar: React.FC<Props> = ({ keySelected, items }) => {
     return <></>
   }
 
+  // Ensure that user.name exists
+  if (user && !user.name) {
+    console.warn('User is defined but does not have a name.')
+  }
+
   return (
     <>
       <Flex
         align="center"
         justify="space-between"
-        className="px-2"
         style={{
-          backgroundColor: Theme.components?.Layout?.headerBg,
-          borderBottom: Theme.components?.Layout?.headerBorderBottom,
+          backgroundColor: Theme.components?.Layout?.headerBg || '#fff', // Provide fallback value for background color
+          borderBottom: '1px solid #ccc', // Replace with a static border value if Theme does not have headerBorderBottom
+          padding: '0 8px', // Replacing className="px-2" with inline style
         }}
       >
         <Flex>
           {user && (
             <Flex>
               <Avatar
-                src={"https://imgur.com/mSihrFB"}
+                src={'https://imgur.com/mSihrFB.png'}
                 alt={user.name}
                 size="small"
                 onClick={() => router('/profile')}
-                style={{"cursor":"pointer"}}
+                style={{ cursor: 'pointer' }}
               >
                 {Utility.stringToInitials(user.name)}
               </Avatar>
@@ -63,7 +68,7 @@ export const Mobilebar: React.FC<Props> = ({ keySelected, items }) => {
           <Menu
             mode="horizontal"
             items={items}
-            selectedKeys={[keySelected]}
+            selectedKeys={keySelected ? [keySelected] : []}
             style={{ width: 46 }}
             overflowedIndicator={<MenuOutlined />}
           />

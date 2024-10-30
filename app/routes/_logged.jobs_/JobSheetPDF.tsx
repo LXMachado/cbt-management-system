@@ -2,10 +2,10 @@ import {
   Document,
   Page,
   PDFDownloadLink,
+  PDFDownloadLinkProps,
+  StyleSheet,
   Text,
   View,
-  StyleSheet,
-  PDFDownloadLinkProps
 } from '@react-pdf/renderer'
 import React from 'react'
 
@@ -69,7 +69,9 @@ const JobSheetPDF: React.FC<{ data: JobSheetData }> = ({ data }) => (
       <Page key={index} size="A4" style={styles.page}>
         <View style={styles.section}>
           <Text style={styles.title}>ACAB ROLLER BLIND ACMEDA WORKSHEET</Text>
-          <Text style={styles.subtitle}>Item {index + 1} of {data.length}</Text>
+          <Text style={styles.subtitle}>
+            Item {index + 1} of {data.length}
+          </Text>
           <View style={styles.row}>
             <Text style={styles.label}>NAME:</Text>
             <Text style={styles.value}>{item.customerName}</Text>
@@ -140,10 +142,9 @@ const JobSheetPDF: React.FC<{ data: JobSheetData }> = ({ data }) => (
   </Document>
 )
 
-export const JobSheetPDFDownloadLink: React.FC<{ data: JobSheetData } & PDFDownloadLinkProps> = ({
-  data,
-  ...props
-}) => (
+export const JobSheetPDFDownloadLink: React.FC<
+  { data: JobSheetData } & PDFDownloadLinkProps
+> = ({ data, ...props }) => (
   <PDFDownloadLink
     document={<JobSheetPDF data={data} />}
     fileName="job_sheet.pdf"
@@ -157,9 +158,10 @@ export const JobSheetPDFDownloadLink: React.FC<{ data: JobSheetData } & PDFDownl
     }}
     {...props}
   >
-    {({ loading }: { loading: boolean }) => (
+    {({ blob, url, loading, error }) =>
       loading ? <span>Loading document...</span> : <span>Download PDF</span>
-    )}
+    }
   </PDFDownloadLink>
 )
+
 export default JobSheetPDF

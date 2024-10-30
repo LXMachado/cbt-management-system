@@ -27,7 +27,7 @@ export const Leftbar: React.FC<Props> = ({
       style={{
         width: '250px',
         backgroundColor: Theme.components?.Layout?.siderBg,
-        borderRight: Theme.token?.borderWidth,
+        borderRight: `1px solid ${Theme.token?.colorBorder || '#ccc'}`, // Adjust this as per available tokens
       }}
     >
       <Menu
@@ -37,12 +37,14 @@ export const Leftbar: React.FC<Props> = ({
         selectedKeys={[keySelected]}
         style={{ width: '100%' }}
       />
-      <Menu
-        mode="inline"
-        inlineIndent={16}
-        items={itemsBottom}
-        style={{ width: '100%' }}
-      />
+      {itemsBottom && (
+        <Menu
+          mode="inline"
+          inlineIndent={16}
+          items={itemsBottom}
+          style={{ width: '100%' }}
+        />
+      )}
     </Flex>
   )
 }
