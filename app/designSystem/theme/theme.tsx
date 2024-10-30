@@ -25,7 +25,8 @@ export const Theme: ThemeConfig = {
       headerBg: 'black',
       footerBg: 'black',
       siderBg: 'black',
-      borderRight: '1px solid #3f3f45',
+      headerBorderColor: '#3f3f45',
+      siderBorderColor: '#3f3f45',
     },
     Menu: {
       itemHeight: 30,

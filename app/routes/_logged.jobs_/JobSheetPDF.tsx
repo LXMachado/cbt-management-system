@@ -2,11 +2,45 @@ import {
   Document,
   Page,
   PDFDownloadLink,
-  StyleSheet,
   Text,
   View,
+  StyleSheet,
+  PDFDownloadLinkProps
 } from '@react-pdf/renderer'
 import React from 'react'
+
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: 'column',
+    backgroundColor: '#ffffff',
+    padding: 30,
+  },
+  section: {
+    margin: 10,
+    padding: 10,
+  },
+  title: {
+    fontSize: 24,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    marginBottom: 5,
+  },
+  label: {
+    width: '30%',
+    fontWeight: 'bold',
+  },
+  value: {
+    width: '70%',
+  },
+})
 
 type JobSheetItem = {
   customerName: string
@@ -28,54 +62,6 @@ type JobSheetItem = {
 }
 
 type JobSheetData = JobSheetItem[]
-
-const styles = StyleSheet.create({
-  page: {
-    flexDirection: 'column',
-    backgroundColor: '#ffffff',
-    padding: 30,
-  },
-  section: {
-    margin: 10,
-    padding: 10,
-    flexGrow: 1,
-  },
-  title: {
-    fontSize: 24,
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  row: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#000000',
-    borderBottomStyle: 'solid',
-    alignItems: 'center',
-    height: 24,
-    fontStyle: 'bold',
-  },
-  label: {
-    width: '30%',
-    textAlign: 'right',
-    marginRight: 8,
-  },
-  value: {
-    width: '70%',
-  },
-  downloadLink: {
-    textDecoration: 'none',
-    padding: '10px',
-    borderRadius: '5px',
-    backgroundColor: '#007bff',
-    color: '#ffffff',
-    cursor: 'pointer',
-  },
-})
 
 const JobSheetPDF: React.FC<{ data: JobSheetData }> = ({ data }) => (
   <Document>
@@ -154,15 +140,24 @@ const JobSheetPDF: React.FC<{ data: JobSheetData }> = ({ data }) => (
   </Document>
 )
 
-export const JobSheetPDFDownloadLink: React.FC<{ data: JobSheetData }> = ({
+export const JobSheetPDFDownloadLink: React.FC<{ data: JobSheetData } & PDFDownloadLinkProps> = ({
   data,
+  ...props
 }) => (
   <PDFDownloadLink
     document={<JobSheetPDF data={data} />}
     fileName="job_sheet.pdf"
-    style={styles.downloadLink}
+    style={{
+      textDecoration: 'none',
+      padding: '10px',
+      borderRadius: '5px',
+      backgroundColor: '#007bff',
+      color: '#ffffff',
+      cursor: 'pointer',
+    }}
+    {...props}
   >
-    {({ loading }) => (
+    {({ loading }: { loading: boolean }) => (
       loading ? <span>Loading document...</span> : <span>Download PDF</span>
     )}
   </PDFDownloadLink>
