@@ -1,40 +1,93 @@
-# Welcome to Remix!
+# Job Management System
 
-- 📖 [Remix docs](https://remix.run/docs)
+A comprehensive web application for managing jobs, installations, team members and product catalog.
 
-## Development
+## Features
 
-Run the dev server:
+- **Job Management**: Create, track and update jobs with detailed information
+- **Installation Tracking**: Monitor installation progress and updates
+- **Product Catalog**: Manage curtain and blind products inventory
+- **Team Management**: Organize team members by roles and responsibilities
 
-```shellscript
+## Tech Stack
+
+- Frontend: React with TypeScript
+- Framework: Vite Remix
+- UI Components: Ant Design
+- Styling: Tailwind CSS
+- API: tRPC React Query
+- Database: Prisma ORM
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone <repository-url>
+```
+
+2. Install dependencies
+```bash
+npm install
+```
+
+3. Run development server
+```bash
 npm run dev
 ```
 
-## Deployment
+### Building for Production
 
-First, build your app for production:
-
-```sh
+1. Build the application
+```bash
 npm run build
 ```
 
-Then run the app in production mode:
-
-```sh
+2. Start production server
+```bash
 npm start
 ```
 
-Now you'll need to pick a host to deploy it to.
+## Project Structure
 
-### DIY
+- `/app/routes/_logged.**`: Protected routes for logged-in users
+- `/app/routes/`: Public routes
+- `/app/core/`: Core functionality and contexts
+- `/app/designSystem/`: Reusable UI components
 
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
+## Key Features
 
-Make sure to deploy the output of `npm run build`
+### Job Management
+- Create and track customer jobs
+- Update job status and progress
+- Add notes and schedule appointments
+- Generate and manage job sheets
 
-- `build/server`
-- `build/client`
+### Installation Tracking
+- Monitor installation progress
+- Update completion status
+- Track installation dates and details
 
-## Styling
+### Product Catalog
+- Manage product inventory
+- Search and filter products
+- Update product information
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
+### Team Management
+- Organize team members by roles
+- Manage permissions and access
+- Track team member activities
+
+## Contributing
+
+Please read our contributing guidelines before submitting pull requests.
+
+## License
+
+This project is licensed under the MIT License.
