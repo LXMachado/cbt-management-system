@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Typography, List, Card, Progress, Modal, Input, message } from 'antd'
+import { Typography, List, Card, Progress, Modal, Input, message, Button } from 'antd'
 const { Title, Text, Paragraph } = Typography
 import { useUserContext } from '@/core/context'
 import dayjs from 'dayjs'
@@ -68,9 +68,12 @@ export default function InstallationTrackingPage() {
                     installation.job?.customer?.name || 'Unknown Customer'
                   }`}
                   extra={
-                    <a onClick={() => navigate(`/jobs/${installation.jobId}`)}>
+                    <Button 
+                      type="link"
+                      onClick={() => navigate(`/jobs/${installation.jobId}`)}
+                    >
                       View Job
-                    </a>
+                    </Button>
                   }
                   hoverable
                 >
@@ -93,7 +96,8 @@ export default function InstallationTrackingPage() {
                     status={installation.completed ? 'success' : 'active'}
                   />
                   <div style={{ marginTop: '16px' }}>
-                    <a
+                    <Button
+                      type="link"
                       onClick={() => {
                         setSelectedInstallation(installation)
                         setProgressUpdate(installation.completed ? 100 : 50)
@@ -101,7 +105,7 @@ export default function InstallationTrackingPage() {
                       }}
                     >
                       Update Progress
-                    </a>
+                    </Button>
                   </div>
                 </Card>
               </List.Item>
