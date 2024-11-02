@@ -28,9 +28,14 @@ export default function JobDetailsPage() {
   const [form] = Form.useForm()
   const [editForm] = Form.useForm()
 
-  const [jobNotes, setJobNotes] = useState<Prisma.JobNoteGetPayload<{}>[]>([])
+  const { mutateAsync: deleteJobItem } = Api.jobItem.delete.useMutation()
+  const { mutateAsync: createJobItem } = Api.jobItem.create.useMutation()
+
+  const [jobNotes, setJobNotes] = useState<Array<Prisma.JobNoteGetPayload<{ include: { user: true } }>>>([])
   const [isEditModalVisible, setIsEditModalVisible] = useState(false)
-  const [selectedJobSheet, setSelectedJobSheet] = useState<Prisma.JobSheetGetPayload<{}> | null>(null)
+  const [isProductModalVisible, setIsProductModalVisible] = useState(false)
+  const [isItemModalVisible, setIsItemModalVisible] = useState(false)
+  const [selectedJobSheet, setSelectedJobSheet] = useState<{ id: string; sheetUrl: string } | null>(null)
 
   const {
     data: job,
@@ -40,13 +45,17 @@ export default function JobDetailsPage() {
     where: { id: jobId },
     include: {
       customer: true,
-      product: true,
+      jobItems: {
+        include: { product: true }
+      },
       status: true,
       jobSheets: true,
       jobSchedules: true,
-      jobNotes: { include: { user: true } },
+      jobNotes: {
+        include: { user: true }
+      }
     },
-  }) as { data: Prisma.JobGetPayload<{ include: { customer: true; product: true; status: true; jobSheets: true; jobSchedules: true; jobNotes: { include: { user: true } } } }> | undefined, isLoading: boolean, refetch: () => void }
+  })
 
   const { data: jobSheet, refetch: refetchJobSheet } = Api.jobSheet.findUnique.useQuery(
     { where: { id: selectedJobSheet?.id } },
@@ -54,6 +63,7 @@ export default function JobDetailsPage() {
   )
 
   const { data: statuses } = Api.jobStatus.findMany.useQuery()
+  const { data: products } = Api.product.findMany.useQuery()
 
   const { mutateAsync: updateJob } = Api.job.update.useMutation()
   const { mutateAsync: createJobNote } = Api.jobNote.create.useMutation()
@@ -102,7 +112,7 @@ export default function JobDetailsPage() {
     }
   }
 
-  const handleEditJobSheet = (sheet: Prisma.JobSheetGetPayload<{}>) => {
+  const handleEditJobSheet = (sheet: Prisma.JobSheetGetPayload<Record<string, never>>) => {
     setSelectedJobSheet(sheet)
     editForm.setFieldsValue(sheet)
     setIsEditModalVisible(true)
@@ -153,11 +163,37 @@ export default function JobDetailsPage() {
         </Paragraph>
 
         <Card title="Job Information">
-          <Space direction="vertical">
+          <Space direction="vertical" style={{ width: '100%' }}>
             <Text strong>Customer: </Text>
             <Text>{job?.customer?.name}</Text>
-            <Text strong>Product: </Text>
-            <Text>{job?.product?.name}</Text>
+            <Text strong>Items: </Text>
+            <List
+              dataSource={job?.jobItems}
+              renderItem={(item: Prisma.JobItemGetPayload<{ include: { product: true } }>) => (
+                <List.Item
+                  key={item.id}
+                  actions={[
+                    <Button 
+                      key="delete" 
+                      danger 
+                      onClick={() => {
+                        deleteJobItem({ where: { id: item.id } }).then(() => refetch());
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  ]}
+                >
+                  <List.Item.Meta
+                    title={`${item.quantity}x ${item.product.name}`}
+                    description={item.product.description}
+                  />
+                </List.Item>
+              )}
+            />
+            <Button type="primary" onClick={() => setIsItemModalVisible(true)}>
+              Add Item
+            </Button>
             <Text strong>Current Status: </Text>
             <Text>{job?.status?.name}</Text>
           </Space>
@@ -180,12 +216,13 @@ export default function JobDetailsPage() {
 
         <Card title="Job Sheets">
           <List
-            dataSource={job?.jobSheets}
-            renderItem={(sheet: Prisma.JobSheetGetPayload<{}>) => (
+          dataSource={job?.jobSheets || []}
+          renderItem={(sheet: Prisma.JobSheetGetPayload<{}>) => (
               <List.Item
+                key={sheet.id}
                 actions={[
-                  <Button onClick={() => handleEditJobSheet(sheet)}>Edit</Button>,
-                  <Button danger onClick={() => handleDeleteJobSheet(sheet.id)}>Delete</Button>
+                  <Button key="edit" onClick={() => handleEditJobSheet(sheet)}>Edit</Button>,
+                  <Button key="delete" danger onClick={() => handleDeleteJobSheet(sheet.id)}>Delete</Button>
                 ]}
               >
                 <Space direction="vertical">
@@ -235,7 +272,7 @@ export default function JobDetailsPage() {
           <List
             dataSource={job?.jobNotes}
             renderItem={(note: Prisma.JobNoteGetPayload<{ include: { user: true } }>) => (
-              <List.Item>
+              <List.Item key={note.id}>
                 <Space direction="vertical">
                   <Text>{note.note}</Text>
                   <Text type="secondary">
@@ -268,7 +305,7 @@ export default function JobDetailsPage() {
 
       <Modal
         title="Edit Job Sheet"
-        visible={isEditModalVisible}
+        open={isEditModalVisible}
         onCancel={() => setIsEditModalVisible(false)}
         footer={null}
       >
@@ -290,6 +327,88 @@ export default function JobDetailsPage() {
           <Form.Item>
             <Button type="primary" htmlType="submit">
               Update Job Sheet
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="Select Product"
+        open={isProductModalVisible}
+        onCancel={() => setIsProductModalVisible(false)}
+        footer={null}
+      >
+        <List
+          dataSource={products}
+          renderItem={(product) => (
+            <List.Item key={product.id}
+              actions={[
+                <Button
+                  type="primary"
+                  onClick={async () => {
+                    await updateJob({
+                      where: { id: job.id },
+                      data: { productId: product.id },
+                    });
+                    setIsProductModalVisible(false);
+                    refetch();
+                  }}
+                >
+                  Select
+                </Button>,
+              ]}
+            >
+              <List.Item.Meta
+                title={product.name}
+                description={product.description}
+              />
+            </List.Item>
+          )}
+        />
+      </Modal>
+
+      <Modal
+        title="Add Item"
+        open={isItemModalVisible}
+        onCancel={() => setIsItemModalVisible(false)}
+        footer={null}
+      >
+        <Form
+          onFinish={(values) => {
+            createJobItem({
+              data: {
+                jobId: job.id,
+                productId: values.productId,
+                quantity: values.quantity,
+              },
+            });
+            setIsItemModalVisible(false);
+            refetch();
+          }}
+        >
+          <Form.Item
+            name="productId"
+            label="Product"
+            rules={[{ required: true, message: 'Please select a product' }]}
+          >
+            <Select>
+              {products?.map((product) => (
+                <Select.Option key={product.id} value={product.id}>
+                  {product.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="quantity"
+            label="Quantity"
+            rules={[{ required: true, message: 'Please enter quantity' }]}
+          >
+            <Input type="number" min={1} />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Add Item
             </Button>
           </Form.Item>
         </Form>
