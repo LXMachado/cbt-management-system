@@ -28,8 +28,8 @@ export default function JobDetailsPage() {
   const [form] = Form.useForm()
   const [editForm] = Form.useForm()
 
-  const { mutateAsync: deleteJobItem } = Api.jobItem.delete.useMutation()
-  const { mutateAsync: createJobItem } = Api.jobItem.create.useMutation()
+  const { mutateAsync: deleteJobItem } = Api.item.delete.useMutation()
+  const { mutateAsync: createJobItem } = Api.item.create.useMutation()
 
   const [jobNotes, setJobNotes] = useState<Array<Prisma.JobNoteGetPayload<{ include: { user: true } }>>>([])
   const [isEditModalVisible, setIsEditModalVisible] = useState(false)
@@ -48,7 +48,7 @@ export default function JobDetailsPage() {
       jobItems: {
         include: { product: true }
       },
-      status: true,
+      jobStatus: true,
       jobSheets: true,
       jobSchedules: true,
       jobNotes: {
@@ -165,11 +165,11 @@ export default function JobDetailsPage() {
         <Card title="Job Information">
           <Space direction="vertical" style={{ width: '100%' }}>
             <Text strong>Customer: </Text>
-            <Text>{job?.customer?.name}</Text>
+            <Text>{job?.jobCustomer?.name}</Text>
             <Text strong>Items: </Text>
             <List
               dataSource={job?.jobItems}
-              renderItem={(item: Prisma.JobItemGetPayload<{ include: { product: true } }>) => (
+              renderItem={(item: Prisma.JobGetPayload<{ include: { product: true } }>) => (
                 <List.Item
                   key={item.id}
                   actions={[
@@ -195,7 +195,7 @@ export default function JobDetailsPage() {
               Add Item
             </Button>
             <Text strong>Current Status: </Text>
-            <Text>{job?.status?.name}</Text>
+            <Text>{job?.jobStatus?.name}</Text>
           </Space>
         </Card>
 
@@ -217,7 +217,7 @@ export default function JobDetailsPage() {
         <Card title="Job Sheets">
           <List
           dataSource={job?.jobSheets || []}
-          renderItem={(sheet: Prisma.JobSheetGetPayload<{}>) => (
+          renderItem={(sheet: Prisma.JobSheetGetPayload<{ include: { job: true } }>) => (
               <List.Item
                 key={sheet.id}
                 actions={[
@@ -341,7 +341,8 @@ export default function JobDetailsPage() {
         <List
           dataSource={products}
           renderItem={(product) => (
-            <List.Item key={product.id}
+            <List.Item 
+              key={product.id}
               actions={[
                 <Button
                   type="primary"
