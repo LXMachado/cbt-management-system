@@ -29,7 +29,15 @@ export default function JobManagementPage() {
     include: { customer: true, status: true },
   })
 
-  const { data: customers } = Api.customer.findMany.useQuery()
+  const [customerSearchText, setCustomerSearchText] = useState('')
+  const { data: customers } = Api.customer.findMany.useQuery({
+    where: {
+      name: {
+        contains: customerSearchText,
+        mode: 'insensitive'
+      }
+    }
+  })
   const { data: jobStatuses } = Api.jobStatus.findMany.useQuery()
   const { mutateAsync: createJob } = Api.job.create.useMutation()
   const { mutateAsync: updateJob } = Api.job.update.useMutation()
@@ -50,7 +58,7 @@ export default function JobManagementPage() {
       dataIndex: 'id',
       key: 'id',
       render: (text: string) => (
-        <a onClick={() => navigate(`/jobs/${text}`)}>{text}</a>
+        <Button type="link" onClick={() => navigate(`/jobs/${text}`)} onKeyPress={(e) => e.key === 'Enter' && navigate(`/jobs/${text}`)}>{text}</Button>
       ),
     },
     {
@@ -164,6 +172,54 @@ export default function JobManagementPage() {
             <i className="las la-plus"></i> Create New Job
           </Button>
         </div>
+
+        <Modal
+          title="Create New Job"
+          open={isModalVisible}
+          onCancel={() => setIsModalVisible(false)}
+          footer={null}
+        >
+          <Form onFinish={handleCreateJob}>
+            <Form.Item
+              name="customerId"
+              label="Customer"
+              rules={[{ required: true, message: 'Please select a customer' }]}
+            >
+              <Select
+                showSearch
+                filterOption={false}
+                onSearch={(value) => setCustomerSearchText(value)}
+                placeholder="Type to search customers"
+              >
+                {customers?.map(customer => (
+                  <Select.Option key={customer.id} value={customer.id}>
+                    {customer.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="statusId"
+              label="Initial Status"
+              rules={[{ required: true, message: 'Please select a status' }]}
+            >
+              <Select>
+                {jobStatuses?.filter((status, index, self) => 
+                  index === self.findIndex(s => s.name === status.name)
+                ).map(status => (
+                  <Select.Option key={status.id} value={status.id}>
+                    {status.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Create Job
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
 
         <Table
           columns={columns}
